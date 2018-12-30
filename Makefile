@@ -19,9 +19,14 @@ TESTDIR := tests
 # definitions of various targets
 MAIN_EXEC := spink
 
+# compiler options
 DEBUGFLAGS := -g -Werror -Wall -Wextra -pedantic -fsanitize=address,undefined
 CXXFLAGS := -I$(INCDIR) -c -std=c++17 -D$(VER_MACRO) $(DEBUGFLAGS)
 LDFLAGS := -lasan
+
+#-------------------------------------------------------------------------------
+# find files in the build tree
+#-------------------------------------------------------------------------------
 
 HEADERS := $(wildcard $(INCDIR)/*.hpp)
 
