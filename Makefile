@@ -10,14 +10,20 @@ VER_RELEASE := 1
 VER_HOTFIX := 1
 VER_MACRO := SPINK_VERSION=\"$(VER_BREAKING).$(VER_RELEASE).$(VER_HOTFIX)\"
 
+# definitions of various targets
+MAIN_EXEC := spink
+TEST_EXEC := test_spink
+LIB_STATIC := libspink.a
+LIB_SHARED := libspink.so
+
 # locations of various subdirectories within the build tree
 SRCDIR := source
 OBJDIR := objects
 INCDIR := include
 TESTDIR := tests
-
-# definitions of various targets
-MAIN_EXEC := spink
+TARGET_LIB_DIR := libs
+TARGET_LIB_STATIC := $(TARGET_LIB_DIR)/$(LIB_STATIC)
+TARGET_LIB_SHARED := $(TARGET_LIB_DIR)/$(LIB_SHARED)
 
 # compiler options
 DEBUGFLAGS := -g -Werror -Wall -Wextra -pedantic -fsanitize=address,undefined
@@ -30,13 +36,16 @@ LDFLAGS := -lstdc++fs -lasan -lubsan
 
 HEADERS := $(wildcard $(INCDIR)/*.hpp)
 
-SOURCES := $(wildcard $(SRCDIR)/*.cpp)
-DEPFILES := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.d)
-OBJECTS := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+LIB_SRCS := $(wildcard $(SRCDIR)/*.cpp)
+TEST_SRCS := $(wildcard $(SRCDIR)/$(TESTDIR)/*.cpp)
+LIB_SRCS := $(filter-out $(wildcard */main.cpp), $(LIB_SRCS))
+LIB_SRCS := $(filter-out $(TEST_SRCS), $(LIB_SRCS))
 
-TEST_SRCS := $(wildcard $(TESTDIR)/*.cpp)
-TEST_DEPS := $(TEST_SRCS:$(TESTDIR)/%.cpp=$(TESTDIR)/$(OBJDIR)/%.d)
-TEST_OBJS := $(TEST_SRCS:$(TESTDIR)/%.cpp=$(TESTDIR)/$(OBJDIR)/%.o)
+LIB_DEPS := $(LIB_SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.d)
+LIB_OBJS := $(LIB_SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+
+TEST_DEPS := $(TEST_SRCS:$(SRCDIR)/$(TESTDIR)/%.cpp=$(OBJDIR)/$(TESTDIR)/%.d)
+TEST_OBJS := $(TEST_SRCS:$(SRCDIR)/$(TESTDIR)/%.cpp=$(OBJDIR)/$(TESTDIR)/%.o)
 
 #-------------------------------------------------------------------------------
 # meta targets
@@ -44,16 +53,27 @@ TEST_OBJS := $(TEST_SRCS:$(TESTDIR)/%.cpp=$(TESTDIR)/$(OBJDIR)/%.o)
 
 .PHONY: all, clean
 
-all: $(MAIN_EXEC)
+all: $(TARGET_LIBS) $(MAIN_EXEC) $(TEST_EXEC)
 
 clean:
-	rm -f $(MAIN_EXEC) $(DEPFILES) $(OBJECTS)
+	rm -f $(TARGET_LIBS) $(MAIN_EXEC) $(TEST_EXEC) \
+	    $(LIB_DEPS) $(LIB_OBJS) $(TEST_DEPS) $(TEST_OBJS) \
+	    $(OBJDIR)/main.o
 
 #-------------------------------------------------------------------------------
 # final targets
 #-------------------------------------------------------------------------------
 
-$(MAIN_EXEC): $(OBJECTS)
+$(TARGET_LIB_STATIC): $(LIB_OBJS)
+	ar rcs $@ $^
+
+$(TARGET_LIB_SHARED): $(LIB_OBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS) -shared
+
+$(MAIN_EXEC): $(OBJDIR)/main.o $(TARGET_LIB_STATIC)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+$(TEST_EXEC): $(TEST_OBJS) $(TARGET_LIB_STATIC)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 #-------------------------------------------------------------------------------
@@ -61,13 +81,17 @@ $(MAIN_EXEC): $(OBJECTS)
 #-------------------------------------------------------------------------------
 
 # build dependency file first, then build object file
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) -MM -MP -MT $(OBJDIR)/$(*F).o -MT $(OBJDIR)/$(*F).d $(CXXFLAGS) \
 	    $< > $(OBJDIR)/$(*F).d
 	$(CXX) -c $< $(CXXFLAGS) -o $@
 
-$(OBJDIR):
-	mkdir $@
+$(OBJDIR)/$(TESTDIR)/%.o: $(SRCDIR)/$(TESTDIR)/%.cpp
+	$(CXX) -MM -MP -MT $(OBJDIR)/$(TESTDIR)/$(*F).o \
+	    -MT $(OBJDIR)/$(TESTDIR)/$(*F).d $(CXXFLAGS) $< \
+	    > $(OBJDIR)/$(TESTDIR)/$(*F).d
+	$(CXX) -c $< $(CXXFLAGS) -o $@
 
--include $(DEPFILES)
+-include $(LIB_DEPS)
+-include $(TEST_DEPS)
 
