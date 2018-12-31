@@ -19,22 +19,6 @@ bool Line::empty() const noexcept {
 Line Line::parse(std::string_view inputString) {
     Line output;
 
-    // std::string_view::size_type blockStartPos;
-    // if (insideBlockComment) {
-        // blockStartPos = 0;
-    // } else {
-        // blockStartPos = inputString.find("/*");
-    // }
-    // if (blockStartPos != std::string_view::npos) {
-        // std::string_view::size_type blockEndPos = inputString.find("*/");
-        // if (blockEndPos == std::string_view::npos) return output;
-        // inputString.remove_prefix(blockEndPos+2);
-    // }
-// 
-    // std::string_view::size_type commentPos = inputString.find("//");
-    // if (commentPos != std::string_view::npos) {
-        // inputString.remove_suffix(inputString.size() - commentPos);
-    // }
     if (inputString.empty()) return output;
 
     std::string_view::size_type tagPos = inputString.find('#');

@@ -26,9 +26,10 @@ TARGET_LIB_STATIC := $(TARGET_LIB_DIR)/$(LIB_STATIC)
 TARGET_LIB_SHARED := $(TARGET_LIB_DIR)/$(LIB_SHARED)
 
 # compiler options
-DEBUGFLAGS := -g -Werror -Wall -Wextra -pedantic -fsanitize=address,undefined
-CXXFLAGS := -I$(INCDIR) -c -std=c++17 -D$(VER_MACRO) $(DEBUGFLAGS)
-LDFLAGS := -lstdc++fs -lasan -lubsan
+COVERAGE_FLAGS := -fprofile-arcs -ftest-coverage
+DEBUG_FLAGS := -g -Werror -Wall -Wextra -pedantic -fsanitize=address,undefined
+CXXFLAGS := -I$(INCDIR) -c -std=c++17 -D$(VER_MACRO) $(DEBUG_FLAGS) $(COVERAGE_FLAGS)
+LDFLAGS := -lstdc++fs -lasan -lubsan -lgcov
 
 #-------------------------------------------------------------------------------
 # find files in the build tree
