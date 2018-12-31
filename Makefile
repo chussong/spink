@@ -58,7 +58,7 @@ all: $(TARGET_LIBS) $(MAIN_EXEC) $(TEST_EXEC)
 clean:
 	rm -f $(TARGET_LIBS) $(MAIN_EXEC) $(TEST_EXEC) \
 	    $(LIB_DEPS) $(LIB_OBJS) $(TEST_DEPS) $(TEST_OBJS) \
-	    $(OBJDIR)/main.o
+	    $(OBJDIR)/main.o $(OBJDIR)/main.d
 
 #-------------------------------------------------------------------------------
 # final targets
