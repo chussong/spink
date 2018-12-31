@@ -22,7 +22,7 @@ MAIN_EXEC := spink
 # compiler options
 DEBUGFLAGS := -g -Werror -Wall -Wextra -pedantic -fsanitize=address,undefined
 CXXFLAGS := -I$(INCDIR) -c -std=c++17 -D$(VER_MACRO) $(DEBUGFLAGS)
-LDFLAGS := -lasan
+LDFLAGS := -lstdc++fs -lasan -lubsan
 
 #-------------------------------------------------------------------------------
 # find files in the build tree
