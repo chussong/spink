@@ -33,8 +33,11 @@ Line Line::parse(std::string_view inputString) {
 }
 
 std::ostream& operator<<(std::ostream& outStream, const Line& line) {
-    outStream << line.text()
-        << LCH::Colors::yellow << "#" << line.tag() << LCH::Colors::reset;
+    outStream << line.text();
+    if (!line.tag().empty()) {
+        outStream << LCH::Colors::yellow << "#" << line.tag() 
+            << LCH::Colors::reset;
+    }
     return outStream;
 }
 
