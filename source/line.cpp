@@ -18,10 +18,11 @@ bool Line::empty() const noexcept {
 
 Line Line::parse(std::string_view inputString) {
     Line output;
-    // from C++20: if (inputString.starts_with("//")) {
-    if (inputString.size() >= 2 && inputString.substr(0, 2) == "//") {
-        return output;
+    std::string_view::size_type commentPos = inputString.find("//");
+    if (commentPos != std::string_view::npos) {
+        inputString.remove_suffix(inputString.size() - commentPos);
     }
+    if (inputString.empty()) return output;
 
     std::string_view::size_type tagPos = inputString.find('#');
     if (tagPos != std::string_view::npos) {
