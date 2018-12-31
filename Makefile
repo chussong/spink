@@ -1,4 +1,4 @@
-# makefile for spink
+# central makefile for spink
 
 #-------------------------------------------------------------------------------
 # setup, declarations, options
@@ -24,6 +24,9 @@ TESTDIR := tests
 TARGET_LIB_DIR := libs
 TARGET_LIB_STATIC := $(TARGET_LIB_DIR)/$(LIB_STATIC)
 TARGET_LIB_SHARED := $(TARGET_LIB_DIR)/$(LIB_SHARED)
+# $(TARGET_LIB_SHARED) can not be compiled with AddressSanitizer because of fPIC
+# TARGET_LIBS := $(TARGET_LIB_STATIC) $(TARGET_LIB_SHARED)
+TARGET_LIBS := $(TARGET_LIB_STATIC)
 
 # compiler options
 COVERAGE_FLAGS := -fprofile-arcs -ftest-coverage
@@ -59,7 +62,7 @@ all: $(TARGET_LIBS) $(MAIN_EXEC) $(TEST_EXEC)
 clean:
 	rm -f $(TARGET_LIBS) $(MAIN_EXEC) $(TEST_EXEC) \
 	    $(LIB_DEPS) $(LIB_OBJS) $(TEST_DEPS) $(TEST_OBJS) \
-	    $(OBJDIR)/main.o $(OBJDIR)/main.d
+	    $(OBJDIR)/main.o $(OBJDIR)/main.d *.gcov
 
 #-------------------------------------------------------------------------------
 # final targets
@@ -85,12 +88,6 @@ $(TEST_EXEC): $(TEST_OBJS) $(TARGET_LIB_STATIC)
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) -MM -MP -MT $(OBJDIR)/$(*F).o -MT $(OBJDIR)/$(*F).d $(CXXFLAGS) \
 	    $< > $(OBJDIR)/$(*F).d
-	$(CXX) -c $< $(CXXFLAGS) -o $@
-
-$(OBJDIR)/$(TESTDIR)/%.o: $(SRCDIR)/$(TESTDIR)/%.cpp
-	$(CXX) -MM -MP -MT $(OBJDIR)/$(TESTDIR)/$(*F).o \
-	    -MT $(OBJDIR)/$(TESTDIR)/$(*F).d $(CXXFLAGS) $< \
-	    > $(OBJDIR)/$(TESTDIR)/$(*F).d
 	$(CXX) -c $< $(CXXFLAGS) -o $@
 
 -include $(LIB_DEPS)
