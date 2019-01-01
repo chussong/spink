@@ -1,6 +1,9 @@
 #ifndef LCH_COLORS
 #define LCH_COLORS
 
+// TODO: expand this to some kind of wrapper for a std::ostream& containing a
+// stack for colors, to allow for sensible results across multiple levels
+
 namespace LCH::Colors {
 
 constexpr const char* black =   "\x1b[30m";

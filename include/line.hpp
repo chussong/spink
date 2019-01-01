@@ -5,6 +5,7 @@
 #ifndef SPINK_LINE_HPP
 #define SPINK_LINE_HPP
 
+#include <vector>
 #include <string>
 #include <string_view>
 #include <iostream>
@@ -18,6 +19,7 @@ class Line {
     bool empty() const noexcept;
 
     static Line parse(std::string_view inputString);
+    static std::vector<Line> parse_multiple(std::string_view inputString);
   private:
     std::string _text;
     std::string _tag;

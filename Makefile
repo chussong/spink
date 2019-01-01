@@ -7,7 +7,7 @@
 # what version this is
 VER_BREAKING := 0
 VER_RELEASE := 1
-VER_HOTFIX := 1
+VER_HOTFIX := 2
 VER_MACRO := SPINK_VERSION=\"$(VER_BREAKING).$(VER_RELEASE).$(VER_HOTFIX)\"
 
 # definitions of various targets
