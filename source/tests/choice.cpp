@@ -20,7 +20,9 @@ const std::vector<std::array<std::string,2>> cases {
      "1: choice 1\n[34mchoice 1[0m\n[34mcontinuation 1[0m\n2: choice2\n[34mchoice2[0m\n[34mcontinuation 2[0m"},
     {"*choice 1\ncontinuation 1a\ncontinuation 1b\n"
         "* choice2\ncontinuation 2a\ncontinuation 2b", 
-     "1: choice 1\n[34mchoice 1[0m\n[34mcontinuation 1a[0m\n[34mcontinuation 1b[0m\n2: choice2\n[34mchoice2[0m\n[34mcontinuation 2a[0m\n[34mcontinuation 2b[0m"}
+     "1: choice 1\n[34mchoice 1[0m\n[34mcontinuation 1a[0m\n[34mcontinuation 1b[0m\n2: choice2\n[34mchoice2[0m\n[34mcontinuation 2a[0m\n[34mcontinuation 2b[0m"},
+    {" *  choice with a distinct [prompt] result\nas well as a second line",
+     "1: choice with a distinct prompt\n[34mchoice with a distinct result[0m\n[34mas well as a second line[0m"}
 };
 
 void run_case(const std::array<std::string,2>& testCase) {
@@ -54,5 +56,9 @@ TEST_CASE("can correctly parse a choice", "[choice]") {
 
     SECTION("parse a choice with 2 options and 2 results each") {
         run_case(cases[5]);
+    }
+
+    SECTION("parse a choice with different option and result text") {
+        run_case(cases[6]);
     }
 }
