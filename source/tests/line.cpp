@@ -13,9 +13,9 @@ const std::vector<std::array<std::string,2>> cases {
     {"Printable line 1", 
      "Printable line 1"},
     {"Printable line 2 # with a tag", 
-     "Printable line 2 [33m# with a tag[0m"},
+     "Printable line 2[33m#with a tag[0m"},
     {"Printable line 3 #with#weird#multiple#tags", 
-     "Printable line 3 [33m#with#weird#multiple#tags[0m"},
+     "Printable line 3[33m#with#weird#multiple#tags[0m"},
     {"#tag-only line", 
      "[33m#tag-only line[0m"}
 };
@@ -28,7 +28,7 @@ void run_case(const std::array<std::string,2>& testCase) {
 }
 } // anonymous namespace
 
-TEST_CASE("can correctly parse a line from an ink file", "[line]") {
+TEST_CASE("can correctly parse a line", "[line]") {
     SECTION("parse an empty line") {
         run_case(cases[0]);
     }

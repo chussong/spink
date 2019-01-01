@@ -1,6 +1,7 @@
 #include "line.hpp"
 
 #include "LCH/colors.hpp"
+#include "LCH/trim.hpp"
 
 namespace Spink {
 
@@ -23,9 +24,21 @@ Line Line::parse(std::string_view inputString) {
 
     std::string_view::size_type tagPos = inputString.find('#');
     if (tagPos != std::string_view::npos) {
-        output._tag = inputString.substr(tagPos+1);
+        output._tag = LCH::trim(inputString.substr(tagPos+1));
     }
-    output._text = inputString.substr(0, tagPos);
+    output._text = LCH::trim(inputString.substr(0, tagPos));
+    return output;
+}
+
+std::vector<Line> Line::parse_multiple(std::string_view inputString) {
+    std::vector<Line> output;
+    std::string_view::size_type lineStart = 0;
+    while (lineStart < inputString.size()) {
+        std::string_view::size_type lineEnd = 
+            std::min(inputString.find('\n', lineStart), inputString.size());
+        output.push_back(parse(inputString.substr(lineStart, lineEnd-lineStart)));
+        lineStart = lineEnd+1;
+    }
     return output;
 }
 
